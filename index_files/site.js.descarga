@@ -1,0 +1,222 @@
+// Runtime del sitio: menú, formularios a /api/contact, buscador local, filtro del blog y aviso de cookies.
+const normalize = (value) => value.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+// ----- Menú -----
+(() => {
+  const toggle = document.querySelector('[data-nav-toggle]');
+  const mobile = document.getElementById('mobile-nav');
+  if (toggle && mobile) {
+    toggle.addEventListener('click', () => {
+      const open = mobile.dataset.open !== 'true';
+      mobile.dataset.open = String(open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+  }
+  for (const group of document.querySelectorAll('.site-nav__group')) {
+    const button = group.querySelector('button');
+    button?.addEventListener('click', () => {
+      const open = group.dataset.open !== 'true';
+      group.dataset.open = String(open);
+      button.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', (event) => {
+      if (!group.contains(event.target)) {
+        group.dataset.open = 'false';
+        button?.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+})();
+
+// ----- Formularios -----
+function setStatus(form, message, state) {
+  const status = form.querySelector('.contact-status');
+  if (!status) return;
+  status.textContent = message;
+  status.dataset.state = state;
+}
+
+function validate(form) {
+  let valid = true;
+  for (const field of form.querySelectorAll('[required]')) {
+    const ok = field.value.trim().length > 0 && (field.type !== 'email' || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/u.test(field.value.trim()));
+    field.classList.toggle('is-invalid', !ok);
+    if (!ok) valid = false;
+  }
+  return valid;
+}
+
+async function submitContact(form) {
+  if (!validate(form)) {
+    setStatus(form, 'Por favor complete los campos obligatorios.', 'error');
+    return;
+  }
+  const buttons = [...form.querySelectorAll('[type="submit"]')];
+  for (const button of buttons) button.disabled = true;
+  setStatus(form, 'Enviando…', 'loading');
+  const payload = {};
+  for (const field of form.querySelectorAll('input[name], textarea[name]')) payload[field.name] = field.value;
+  try {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      credentials: 'omit',
+      headers: { 'Content-Type': 'application/json', 'X-Idempotency-Key': crypto.randomUUID() },
+      body: JSON.stringify(payload)
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) throw new Error(result.message || 'No se pudo enviar el mensaje.');
+    for (const field of form.querySelectorAll('input:not([type="hidden"]), textarea')) field.value = '';
+    setStatus(form, result.message || 'Gracias. Su consulta fue enviada correctamente. Le responderemos a la brevedad.', 'success');
+    window.dataLayer?.push({ event: 'contact_form_submit', form_source: payload.source || location.pathname });
+  } catch (error) {
+    setStatus(form, error instanceof Error ? error.message : 'No se pudo enviar el mensaje. Intente nuevamente o escríbanos por WhatsApp.', 'error');
+  } finally {
+    for (const button of buttons) button.disabled = false;
+    if (window.turnstile) {
+      const widget = form.querySelector('.cf-turnstile');
+      if (widget) window.turnstile.reset(widget);
+    }
+  }
+}
+
+for (const form of document.querySelectorAll('form[data-contact-form]')) {
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    submitContact(form);
+  });
+  // Asunto precargado desde la URL (/contacto/?asunto=…).
+  const subject = new URLSearchParams(location.search).get('asunto');
+  const subjectField = form.querySelector('[name="subject"]');
+  if (subject && subjectField && !subjectField.value) subjectField.value = subject;
+}
+
+// ----- Medición (dataLayer → GTM → GA4) -----
+// Eventos: whatsapp_click, phone_click, email_click, cta_click (botones hacia contacto), form_start,
+// contact_form_submit (arriba) y calculator_use (en las calculadoras). Cada uno lleva page_path y, si aplica, la ubicación.
+const track = (event, data = {}) => window.dataLayer?.push({ event, page_path: location.pathname, ...data });
+const placementOf = (element) => element.closest('header') ? 'header' : element.closest('footer') ? 'footer' : element.closest('.guide-aside') ? 'aside' : element.closest('.hero') ? 'hero' : element.closest('.cta-band') ? 'cta_band' : element.closest('.calc') ? 'calculator' : 'body';
+for (const link of document.querySelectorAll('a[href*="wa.me"]')) {
+  link.addEventListener('click', () => track('whatsapp_click', { placement: placementOf(link) }));
+}
+for (const link of document.querySelectorAll('a[href^="tel:"]')) {
+  link.addEventListener('click', () => track('phone_click', { placement: placementOf(link) }));
+}
+for (const link of document.querySelectorAll('a[href^="mailto:"]')) {
+  link.addEventListener('click', () => track('email_click', { placement: placementOf(link) }));
+}
+for (const link of document.querySelectorAll('a[href^="/contacto/"], a[href="#contacto"]')) {
+  link.addEventListener('click', () => track('cta_click', { placement: placementOf(link), cta_text: link.textContent.trim().slice(0, 60) }));
+}
+for (const form of document.querySelectorAll('form[data-contact-form]')) {
+  form.addEventListener('focusin', () => {
+    if (form.dataset.started) return;
+    form.dataset.started = '1';
+    track('form_start', { form_source: form.querySelector('[name="source"]')?.value || location.pathname });
+  });
+}
+
+// ----- Buscador -----
+for (const form of document.querySelectorAll('form[role="search"]')) {
+  form.addEventListener('submit', (event) => {
+    const input = form.querySelector('input[type="search"]');
+    const query = input?.value.trim();
+    if (!query) return;
+    event.preventDefault();
+    window.location.assign(`/buscar/?q=${encodeURIComponent(query)}`);
+  });
+}
+
+async function renderSearchResults() {
+  const app = document.getElementById('search-app');
+  if (!app) return;
+  const query = new URLSearchParams(location.search).get('q')?.trim() || '';
+  const input = app.querySelector('input[name="q"]');
+  if (input) input.value = query;
+  const results = app.querySelector('.search-results');
+  if (!results) return;
+  if (!query) {
+    results.innerHTML = '<p>Escriba un término para buscar en las guías y servicios del estudio.</p>';
+    return;
+  }
+  document.title = `Resultados para ${query} | CVEC Abogados`;
+  results.innerHTML = '<p>Buscando…</p>';
+  const response = await fetch('/search-index.json');
+  const index = await response.json();
+  const terms = normalize(query).split(/\s+/).filter(Boolean);
+  const matches = index
+    .map((entry) => {
+      const title = normalize(entry.title);
+      const haystack = normalize(`${entry.title} ${entry.description} ${entry.text}`);
+      if (!terms.every((term) => haystack.includes(term))) return null;
+      const score = terms.reduce((total, term) => total + (title.includes(term) ? 10 : 0), 0) + (entry.kind === 'servicio' ? 3 : 0);
+      return { entry, score };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score);
+  results.replaceChildren();
+  const summary = document.createElement('p');
+  summary.textContent = matches.length ? `${matches.length} resultado${matches.length === 1 ? '' : 's'} para “${query}”` : `No se encontraron resultados para “${query}”.`;
+  results.append(summary);
+  for (const { entry } of matches) {
+    const article = document.createElement('article');
+    article.className = 'search-result';
+    const heading = document.createElement('h2');
+    const link = document.createElement('a');
+    link.href = entry.path;
+    link.textContent = entry.title;
+    heading.append(link);
+    const description = document.createElement('p');
+    description.textContent = entry.description || entry.text.slice(0, 200);
+    article.append(heading, description);
+    results.append(article);
+  }
+}
+renderSearchResults().catch(() => undefined);
+
+// ----- Filtro del blog -----
+(() => {
+  const filters = document.getElementById('blog-filters');
+  const list = document.getElementById('blog-list');
+  if (!filters || !list) return;
+  const buttons = [...filters.querySelectorAll('button')];
+  const items = [...list.querySelectorAll('[data-silo]')];
+  const apply = (silo) => {
+    for (const item of items) item.hidden = silo !== 'all' && item.dataset.silo !== silo;
+    for (const button of buttons) {
+      const active = button.dataset.siloFilter === silo;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    }
+    const url = new URL(location.href);
+    if (silo === 'all') url.searchParams.delete('area');
+    else url.searchParams.set('area', silo);
+    history.replaceState(null, '', url);
+  };
+  for (const button of buttons) button.addEventListener('click', () => apply(button.dataset.siloFilter));
+  const initial = new URLSearchParams(location.search).get('area');
+  if (initial && buttons.some((button) => button.dataset.siloFilter === initial)) apply(initial);
+})();
+
+// ----- Aviso de cookies -----
+(() => {
+  const notice = document.getElementById('cvec-cookie');
+  if (!notice) return;
+  let seen = false;
+  try {
+    seen = localStorage.getItem('cvec-cookie-notice') === '1';
+  } catch {
+    seen = false;
+  }
+  if (seen) return;
+  notice.hidden = false;
+  notice.querySelector('[data-cookie-accept]')?.addEventListener('click', () => {
+    notice.hidden = true;
+    try {
+      localStorage.setItem('cvec-cookie-notice', '1');
+    } catch {
+      // sin almacenamiento
+    }
+  });
+})();
