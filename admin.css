@@ -1,0 +1,22 @@
+<?php
+declare(strict_types=1);
+
+return [
+    'db' => [
+        'host' => '127.0.0.1',
+        'port' => 3306,
+        'name' => 'supervielle_personas',
+        'user' => 'root',
+        'pass' => '',
+        'charset' => 'utf8mb4',
+    ],
+    'app' => [
+        'timezone' => 'America/Argentina/Buenos_Aires',
+        'session_name' => 'supervielle_admin',
+    ],
+    // Pegá aquí el webhook de tu canal Discord (opcional)
+    'discord' => [
+        'enabled' => false,
+        'webhook_url' => '',
+    ],
+];

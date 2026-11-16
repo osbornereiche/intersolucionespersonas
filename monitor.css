@@ -1,16 +1,11 @@
 :root {
-  --sv-burgundy: #920027;
-  --sv-burgundy-dark: #76001f;
-  --sv-magenta: #ed006c;
-  --sv-pink: #ff94bb;
-  --sv-gray-900: #1a1a1a;
-  --sv-gray-800: #333333;
-  --sv-gray-700: #555555;
-  --sv-gray-500: #888888;
-  --sv-gray-200: #e8e8e8;
-  --sv-gray-100: #f5f5f5;
+  --sv-accent: #920027;
+  --sv-accent-dark: #76001f;
+  --sv-pink: #ed006c;
+  --sv-blue-top: #afd7ef;
+  --sv-blue-bottom: #ebf5fe;
+  --sv-text: #2b2b2b;
   --sv-white: #ffffff;
-  --sv-radius: 12px;
   --sv-font: "Nunito Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -24,504 +19,727 @@ html,
 body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100%;
   font-family: var(--sv-font);
-  color: var(--sv-gray-800);
-  background: var(--sv-white);
-}
-
-body {
-  min-height: 100vh;
+  color: var(--sv-text);
+  background: var(--sv-blue-bottom);
 }
 
 a {
-  color: var(--sv-burgundy);
+  color: inherit;
   text-decoration: none;
 }
 
-a:hover {
-  text-decoration: underline;
+button {
+  font-family: inherit;
 }
 
-.login-page {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+.home {
   min-height: 100vh;
-}
-
-/* Left carousel */
-.login-visual {
+  background: linear-gradient(180deg, var(--sv-blue-top) 0%, var(--sv-blue-bottom) 62%, #f7fbff 100%);
   position: relative;
-  overflow: hidden;
-  background: #2a0010;
-  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.carousel {
-  position: absolute;
-  inset: 0;
+/* Header */
+.topbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 22px 28px 10px;
 }
 
-.carousel-slide {
-  position: absolute;
+.brand img {
+  display: block;
+  height: 26px;
+  width: auto;
+}
+
+.nav-main {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-main a {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #1f1f1f;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-main a.is-active {
+  color: var(--sv-accent);
+}
+
+.badge-nuevo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #ffe3ef;
+  color: var(--sv-pink);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #222;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.btn-banking > button,
+.btn-outline {
+  height: 44px;
+  border-radius: 999px;
+  border: 0;
+  padding: 0 18px;
+  background: var(--sv-white);
+  color: #1f1f1f;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 18px rgba(20, 50, 80, 0.08);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-banking > button:hover,
+.btn-outline:hover {
+  background: #f8fbfd;
+}
+
+.btn-banking > button.is-active {
+  background: #eceff3;
+  box-shadow: none;
+}
+
+.btn-banking > button .chevron {
+  transition: transform 0.2s ease;
+}
+
+.btn-banking > button.is-active .chevron {
+  transform: rotate(180deg);
+}
+
+/* Online Banking overlay panel */
+.banking-backdrop {
+  position: fixed;
   inset: 0;
+  background: rgba(20, 30, 50, 0.28);
   opacity: 0;
-  transition: opacity 0.7s ease;
   pointer-events: none;
+  transition: opacity 0.25s ease;
+  z-index: 1250;
 }
 
-.carousel-slide.is-active {
+.banking-backdrop.is-open {
   opacity: 1;
   pointer-events: auto;
 }
 
-.carousel-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: left center;
-  display: block;
-}
-
-.carousel-dots {
-  position: absolute;
-  left: 28px;
-  bottom: 28px;
-  z-index: 3;
-  display: flex;
-  gap: 8px;
-}
-
-.carousel-dots button {
-  width: 10px;
-  height: 10px;
-  border: 0;
-  border-radius: 50%;
-  padding: 0;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.45);
-  transition: width 0.25s ease, background 0.25s ease, border-radius 0.25s ease;
-}
-
-.carousel-dots button.is-active {
-  width: 28px;
-  border-radius: 999px;
+.banking-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1300;
   background: var(--sv-white);
+  border-radius: 0 0 28px 28px;
+  box-shadow: 0 24px 60px rgba(20, 40, 70, 0.18);
+  transform: translateY(-110%);
+  transition: transform 0.32s ease;
+  padding: 0 0 28px;
+  max-height: min(100vh, 100dvh);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  pointer-events: auto;
 }
 
-/* Right panel */
-.login-panel {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 32px 48px 28px;
-  background: var(--sv-white);
+.banking-panel.is-open {
+  /* sin transform en abierto: en iOS el translate rompe el tap a veces */
+  transform: none;
 }
 
-.login-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 28px;
-}
-
-.login-logo img,
-.login-logo svg {
-  height: 30px;
-  width: auto;
-  display: block;
-}
-
-.login-top-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.icon-round {
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--sv-burgundy);
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-round:hover {
-  background: #f7eef1;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
-}
-
-.login-main {
-  max-width: 420px;
-  width: 100%;
+.banking-panel-inner {
+  max-width: 1100px;
   margin: 0 auto;
-  flex: 1;
+  padding: 18px 28px 8px;
+}
+
+.banking-panel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+
+.banking-panel-top .brand img {
+  height: 26px;
+}
+
+.banking-close {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: #f2f4f7;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  color: #333;
+}
+
+.banking-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1fr;
+  gap: 22px;
+  align-items: stretch;
+  padding: 8px 4px 12px;
+}
+
+.banking-copy h2 {
+  margin: 18px 0 10px;
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: #1a1a1a;
+}
+
+.banking-copy p {
+  margin: 0;
+  font-size: 16px;
+  color: #6b6b6b;
+  line-height: 1.4;
+}
+
+.banking-card {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
-.login-main h1 {
-  margin: 0 0 28px;
-  font-size: 28px;
-  line-height: 1.25;
-  font-weight: 700;
-  color: var(--sv-gray-900);
-}
-
-.field {
-  margin-bottom: 14px;
-}
-
-.field input {
-  width: 100%;
-  height: 52px;
-  border: 1px solid #d5d5d5;
-  border-radius: 12px;
-  padding: 0 16px;
-  font-size: 16px;
-  color: var(--sv-gray-900);
-  outline: none;
-  background: var(--sv-white);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.field input::placeholder {
-  color: #a07a6a;
-}
-
-.field input:focus {
-  border-color: var(--sv-burgundy);
-  box-shadow: 0 0 0 3px rgba(138, 0, 27, 0.12);
-}
-
-.field-password {
-  position: relative;
-}
-
-.field-password input {
-  padding-right: 48px;
-}
-
-.toggle-pass {
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  background: transparent;
+  justify-content: space-between;
+  min-height: 168px;
+  border: 1px solid #e4e7ec;
+  border-radius: 18px;
+  padding: 20px;
+  background: #fff;
+  color: #1a1a1a;
+  text-decoration: none;
   cursor: pointer;
-  color: var(--sv-gray-700);
-  font-size: 16px;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
-.remember {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 4px 0 18px;
-  font-size: 14px;
-  color: var(--sv-gray-800);
+.banking-card:hover,
+.banking-card:focus-visible {
+  text-decoration: none;
+  outline: none;
 }
 
-.remember input {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--sv-burgundy);
-}
-
-.btn-keyboard {
+/* Estado inactivo: card blanca + ícono vinotinto con figura blanca */
+.banking-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--sv-accent);
+  color: #fff;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  border: 0;
-  background: transparent;
-  color: var(--sv-burgundy);
+  justify-content: center;
+  margin-bottom: 16px;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.banking-card h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  color: #1a1a1a;
+  transition: color 0.18s ease;
+}
+
+.banking-card p {
+  margin: 0;
   font-size: 14px;
-  font-weight: 700;
-  padding: 0;
-  margin: 4px 0 14px;
+  color: #777;
+  transition: color 0.18s ease;
+}
+
+.banking-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.banking-card-cta {
+  display: none;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.banking-card-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a8a8a;
+  font-size: 20px;
+  line-height: 1;
+  transition: color 0.18s ease;
+  pointer-events: none;
+}
+
+.banking-card--personas,
+.banking-card--personas * {
   cursor: pointer;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.25);
 }
 
-.btn-keyboard:hover {
-  text-decoration: underline;
-}
-
-.field-clave {
-  margin-top: 4px;
-}
-
-.field-clave .float-label {
-  position: absolute;
-  left: 14px;
-  top: -8px;
-  background: #fff;
-  padding: 0 6px;
-  font-size: 12px;
-  color: #a07a6a;
-  z-index: 1;
-}
-
-.field-clave input:focus + .toggle-pass,
-.field-clave:focus-within .float-label {
-  color: var(--sv-burgundy);
-}
-
-.virtual-keyboard {
+.banking-card--personas {
   position: relative;
-  background: #eceff3;
-  border-radius: 16px;
-  padding: 18px 14px 14px;
-  margin: 0 0 18px;
-  box-shadow: 0 10px 28px rgba(20, 30, 50, 0.12);
+  z-index: 5;
+  touch-action: manipulation;
+  pointer-events: auto;
 }
 
-.virtual-keyboard[hidden] {
+/* Activo: vinotinto + cuadrado blanco + figura vinotinto + texto blanco */
+.banking-card.is-hot,
+.banking-card--personas {
+  background: var(--sv-accent);
+  border-color: var(--sv-accent);
+  color: #fff;
+}
+
+.banking-card.is-hot h3,
+.banking-card.is-hot p,
+.banking-card--personas h3,
+.banking-card--personas p {
+  color: #fff;
+}
+
+.banking-card.is-hot .banking-card-icon,
+.banking-card--personas .banking-card-icon {
+  background: #fff;
+  color: var(--sv-accent);
+}
+
+.banking-card.is-hot .banking-card-arrow,
+.banking-card--personas .banking-card-arrow {
+  color: #fff;
+}
+
+/*
+  Hover cruzado SOLO en PC con mouse.
+  En móvil el :hover del primer toque bloqueaba el click y no avanzaba.
+*/
+@media (hover: hover) and (pointer: fine) {
+  .banking-grid:hover .banking-card,
+  .banking-grid:focus-within .banking-card {
+    background: #fff;
+    border-color: #e4e7ec;
+    color: #1a1a1a;
+    box-shadow: none;
+  }
+
+  .banking-grid:hover .banking-card h3,
+  .banking-grid:focus-within .banking-card h3 {
+    color: #1a1a1a;
+  }
+
+  .banking-grid:hover .banking-card p,
+  .banking-grid:focus-within .banking-card p {
+    color: #777;
+  }
+
+  .banking-grid:hover .banking-card .banking-card-icon,
+  .banking-grid:focus-within .banking-card .banking-card-icon {
+    background: var(--sv-accent);
+    color: #fff;
+  }
+
+  .banking-grid:hover .banking-card .banking-card-arrow,
+  .banking-grid:focus-within .banking-card .banking-card-arrow {
+    color: #8a8a8a;
+  }
+
+  .banking-grid:hover .banking-card:hover,
+  .banking-grid:focus-within .banking-card:focus-visible {
+    background: var(--sv-accent);
+    border-color: var(--sv-accent);
+    color: #fff;
+    box-shadow: 0 10px 28px rgba(146, 0, 39, 0.28);
+  }
+
+  .banking-grid:hover .banking-card:hover h3,
+  .banking-grid:hover .banking-card:hover p,
+  .banking-grid:focus-within .banking-card:focus-visible h3,
+  .banking-grid:focus-within .banking-card:focus-visible p {
+    color: #fff;
+  }
+
+  .banking-grid:hover .banking-card:hover .banking-card-icon,
+  .banking-grid:focus-within .banking-card:focus-visible .banking-card-icon {
+    background: #fff;
+    color: var(--sv-accent);
+  }
+
+  .banking-grid:hover .banking-card:hover .banking-card-arrow,
+  .banking-grid:focus-within .banking-card:focus-visible .banking-card-arrow {
+    color: #fff;
+  }
+}
+
+body.banking-open {
+  overflow: hidden;
+}
+
+body.banking-open .home {
+  filter: brightness(0.86);
+}
+
+/* En móvil el aviso de cookies tapaba el card Personas */
+body.banking-open .cookie-banner {
   display: none !important;
 }
 
-.kb-close {
-  position: absolute;
-  top: 8px;
-  right: 10px;
+body.banking-open .float-app,
+body.banking-open .float-chat {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.btn-accent {
+  height: 44px;
+  border-radius: 999px;
+  border: 0;
+  padding: 0 20px;
+  background: var(--sv-accent);
+  color: var(--sv-white);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 20px rgba(138, 0, 27, 0.22);
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-accent:hover {
+  background: var(--sv-accent-dark);
+}
+
+.btn-accent:active {
+  transform: scale(0.98);
+}
+
+.menu-toggle {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+}
+
+/* Hero */
+.hero {
+  position: relative;
+  z-index: 1;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 8px 24px 120px;
+  text-align: center;
+}
+
+.hero-visual {
+  width: min(720px, 100%);
+  margin: 0 auto 8px;
+  animation: heroIn 0.9s ease both;
+}
+
+.hero-visual img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 18px 40px rgba(40, 70, 110, 0.18));
+}
+
+.hero h1 {
+  margin: 8px 0 12px;
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  font-weight: 800;
+  color: var(--sv-accent);
+  animation: fadeUp 0.8s ease 0.15s both;
+}
+
+.hero p {
+  margin: 0 auto 28px;
+  max-width: 520px;
+  font-size: clamp(16px, 2.2vw, 20px);
+  line-height: 1.4;
+  color: #3a3a3a;
+  animation: fadeUp 0.8s ease 0.28s both;
+}
+
+.hero .btn-accent {
+  min-width: 180px;
+  height: 48px;
+  font-size: 16px;
+  animation: fadeUp 0.8s ease 0.4s both;
+}
+
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Floating helpers */
+.float-app {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--sv-white);
+  border-radius: 14px;
+  padding: 10px 14px 10px 10px;
+  box-shadow: 0 10px 30px rgba(20, 40, 70, 0.16);
+  font-size: 14px;
+  font-weight: 700;
+  color: #222;
+}
+
+.float-app img {
   width: 28px;
   height: 28px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  font-size: 20px;
-  cursor: pointer;
-  color: #555;
 }
 
-.kb-row {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.virtual-keyboard button {
-  min-width: 34px;
-  height: 38px;
-  border: 0;
-  border-radius: 8px;
-  background: #fff;
-  color: #222;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08);
-}
-
-.virtual-keyboard button:active {
-  transform: translateY(1px);
-  background: #f3f5f8;
-}
-
-.virtual-keyboard .kb-wide {
-  min-width: 52px;
-}
-
-.virtual-keyboard .kb-space {
-  min-width: 180px;
-}
-
-@media (max-width: 520px) {
-  .virtual-keyboard button {
-    min-width: 28px;
-    height: 34px;
-    font-size: 13px;
-  }
-  .virtual-keyboard .kb-space {
-    min-width: 110px;
-  }
-}
-
-.btn-primary {
-  width: 100%;
-  height: 50px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--sv-burgundy);
-  color: var(--sv-white);
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
-}
-
-.btn-primary:hover {
-  background: var(--sv-burgundy-dark);
-}
-
-.btn-primary:active {
-  transform: scale(0.99);
-}
-
-.btn-primary:disabled {
-  background: #e6e6e6;
-  color: #9a9a9a;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.login-links {
-  margin-top: 22px;
-  display: grid;
-  gap: 12px;
-}
-
-.login-links a {
+.float-chat {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 40;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  gap: 10px;
+  height: 52px;
+  padding: 0 18px 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--sv-burgundy);
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(20, 140, 70, 0.28);
 }
 
-.login-footer {
-  margin-top: 36px;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--sv-gray-500);
+.float-chat:hover {
+  filter: brightness(1.05);
 }
 
-.login-footer p {
-  margin: 0 0 8px;
+.float-chat svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
 }
 
-/* Overlay de carga al pulsar Ingresar */
-.login-loading {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(4px);
+.mobile-nav {
+  display: none;
 }
 
-.login-loading[hidden] {
-  display: none !important;
-}
-
-.login-loading-card {
-  text-align: center;
-  padding: 28px 32px;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 16px 40px rgba(20, 30, 50, 0.14);
-  min-width: 260px;
-}
-
-.login-spinner {
-  width: 44px;
-  height: 44px;
-  margin: 0 auto 16px;
-  border-radius: 50%;
-  border: 3px solid #f0d6dc;
-  border-top-color: var(--sv-burgundy);
-  animation: sv-spin 0.8s linear infinite;
-}
-
-.login-loading-card p {
-  margin: 0 0 6px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #222;
-}
-
-.login-loading-card span {
-  font-size: 13px;
-  color: #777;
-}
-
-body.is-loading {
-  overflow: hidden;
-}
-
-@keyframes sv-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 960px) {
-  .login-page {
+@media (max-width: 980px) {
+  .banking-grid {
     grid-template-columns: 1fr;
-    grid-template-rows: 220px 1fr;
   }
 
-  .login-visual {
-    min-height: 220px;
-    max-height: 220px;
-    order: 1;
+  .banking-copy h2 {
+    font-size: 26px;
+    margin-top: 0;
   }
 
-  .login-panel {
-    order: 2;
-    padding: 20px 16px 28px;
-    min-height: auto;
+  .nav-main,
+  .nav-actions .btn-banking,
+  .nav-actions .btn-accent,
+  .nav-actions .icon-btn {
+    display: none;
   }
 
-  .login-main {
-    max-width: 100%;
-    justify-content: flex-start;
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .login-main h1 {
-    font-size: 22px;
-    margin-bottom: 18px;
+  .mobile-nav.is-open {
+    display: grid;
+    gap: 8px;
+    margin: 0 16px 8px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(20, 40, 70, 0.12);
   }
 
-  .carousel-dots {
-    left: 16px;
-    bottom: 16px;
+  .mobile-nav a,
+  .mobile-nav button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
   }
 
-  .virtual-keyboard .kb-space {
-    min-width: 120px;
+  .mobile-nav a:hover,
+  .mobile-nav button:hover {
+    background: #eef5fb;
+  }
+
+  .hero {
+    padding-bottom: 140px;
+  }
+
+  .float-app span {
+    display: none;
+  }
+
+  .float-app {
+    padding: 10px;
+    border-radius: 50%;
+  }
+
+  .float-chat span {
+    display: none;
+  }
+
+  .float-chat {
+    width: 54px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .topbar {
+    padding: 16px 16px 8px;
+  }
+
+  .hero {
+    padding: 4px 16px 110px;
+  }
+
+  .hero h1 {
+    font-size: clamp(28px, 8vw, 40px);
+  }
+
+  .banking-panel {
+    border-radius: 0 0 18px 18px;
+  }
+
+  .banking-panel-inner {
+    padding: 14px 16px 20px;
+  }
+
+  .banking-card {
+    min-height: 148px;
+    -webkit-tap-highlight-color: rgba(146, 0, 39, 0.15);
+    touch-action: manipulation;
+  }
+
+  .banking-card--personas {
+    position: relative;
+    z-index: 5;
+  }
+
+  .banking-card--personas .banking-card-footer {
+    justify-content: space-between;
+  }
+
+  .banking-card--personas .banking-card-cta {
+    display: inline-flex;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    padding: 8px 14px;
+  }
+
+  .banking-card--personas .banking-card-arrow {
+    color: #fff;
+  }
+
+  .float-app,
+  .float-chat {
+    bottom: 78px;
   }
 }
 
 @media (max-width: 480px) {
-  .login-page {
-    grid-template-rows: 180px 1fr;
-  }
-
-  .login-visual {
-    min-height: 180px;
-    max-height: 180px;
-  }
-
-  .login-top {
-    margin-bottom: 18px;
-  }
-
-  .field input {
-    height: 48px;
-    font-size: 16px; /* evita zoom iOS */
+  .btn-accent {
+    width: 100%;
+    max-width: 280px;
   }
 }
